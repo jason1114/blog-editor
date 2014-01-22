@@ -4,6 +4,7 @@ function env($name){
 	if($val){
 		return $val;
 	}else{
-		return C('LOCAL_ENV')[$name];
+		$local_env = C('LOCAL_ENV');
+		return $local_env[$name];
 	}
 }
