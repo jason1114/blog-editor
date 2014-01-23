@@ -1,10 +1,5 @@
 <?php
 function env($name){
-	$val = getenv($name);
-	if($val){
-		return $val;
-	}else{
-		$local_env = C('LOCAL_ENV');
-		return $local_env[$name];
-	}
+	$env_map = C(RUN_TIME.'_ENV_MAP');
+	return $env_map[$name];
 }

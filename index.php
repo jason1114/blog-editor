@@ -20,6 +20,13 @@ define('APP_DEBUG',True);
 // 定义应用目录
 define('APP_PATH','./Application/');
 
+// is in cloud mode
+if(getenv('RUN_TIME')){
+	define('RUN_TIME',getenv('RUN_TIME'));
+}else{
+	define('RUN_TIME','LOCAL');
+}
+
 // 引入ThinkPHP入口文件
 require './ThinkPHP/ThinkPHP.php';
 
