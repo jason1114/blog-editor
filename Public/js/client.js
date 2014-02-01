@@ -36,7 +36,7 @@ function draft_list_events_binding($table,data){
 	$table.find("a.remove_draft").click(function(){
 		var c = confirm("Are you sure to delete?")
 		if(!c){
-			return;
+			return false;
 		}
 		var id = $(this).attr("data-id") 
 		$.getJSON(config['web_root']+"Home/Draft/delete_draft",
@@ -50,6 +50,7 @@ function draft_list_events_binding($table,data){
 				alert(data.info)
 			}
 		})
+		return false;
 	})
 	$table.find("tr").click(function(){
 		var id = $(this).attr("data-id")

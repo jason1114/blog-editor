@@ -25,6 +25,9 @@ class UploadController extends Controller {
         
     }
     public function thumb(){
+        if (!file_exists(env('THUMB_DIR'))) {
+            mkdir(env('THUMB_DIR'));         
+        }
         $statement = $this->pdo->prepare("select title from draft where id=?");
         $statement->execute(array($_POST['id']));
         $r = $statement->fetch();
@@ -45,6 +48,9 @@ class UploadController extends Controller {
         );
     }
     public function inset(){
+        if (!file_exists(env('INSET_DIR'))) {
+            mkdir(env('INSET_DIR'));         
+        }
         if(file_exists(env('INSET_DIR').$_FILES['file']['name'])){
             echo(json_encode(array('result'=>'error','info'=>'inset already exists.')));
             return ;
@@ -64,6 +70,9 @@ class UploadController extends Controller {
         );
     }
     public function attachment(){
+        if (!file_exists(env('ATTACHMENT_DIR'))) {
+            mkdir(env('ATTACHMENT_DIR'));         
+        }
         if(file_exists(env('ATTACHMENT_DIR').$_FILES['file']['name'])){
             echo(json_encode(array('result'=>'error','info'=>'attachment already exists.')));
             return ;
