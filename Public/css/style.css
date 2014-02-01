@@ -41,6 +41,9 @@ body{
 #upload-forms{
 	margin-top: 10px;
 }
+#top-form .form-group{
+	padding-left: 0;
+}
 .progress{
 	margin-top: 5px;
 }

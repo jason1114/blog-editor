@@ -43,6 +43,9 @@ function draft_list_events_binding($table,data){
 			{id:id},function(data){
 			if(data.result==="ok"){
 				$table.find("tr[data-id="+id+"]").remove()
+				if(id===$("#update_title").attr("data-id")){
+					clear_draft();					
+				}
 			}else{
 				alert(data.info)
 			}
@@ -63,7 +66,7 @@ function load_draft(id,callback){
 		editor.setValue(data['content'])
 		var result = parse(data['content'])
 		$("#ptitle").text(result['title'])
-		re_load_thumb(get_thumb_name(data.title))
+		re_load_thumb(get_thumb_name(data.title)+'.jpg')
 		load_images(id)
 		load_attachments(id)
 		if(callback){
@@ -77,7 +80,7 @@ function load_draft(id,callback){
 	}
 }
 function re_load_thumb(title){
-	$("#thumb").attr("src",config['thumb_dir']+title+".jpg")
+	$("#thumb").attr("src",config['thumb_dir']+title)
 }
 function parse(content){
 	var head = content.split("---")[1]
@@ -176,6 +179,14 @@ function attachment_list_events_binding($table,data){
 		})
 	})
 }
+function clear_draft(){
+	$("#east-center table,#east-south table,#update_title").removeAttr("data-id")
+	$("#east-center table,#east-south table").html('')
+	$("#thumb").attr("src",'')
+	$("#title").val('')
+	$("#create_time,#last_save_time,#ptitle").text('')
+	editor.setValue('')
+}
 
 function bind_file_upload_event($file_input,callback){
 	var $progress_bar = $file_input.parent().siblings(".progress").find(".progress-bar")
@@ -192,7 +203,7 @@ function bind_file_upload_event($file_input,callback){
 			return true;
 		},
 		get_data:function(){
-			return {id:$("update_title").attr("data-id")}
+			return {id:$("#update_title").attr("data-id")}
 		},
 		progress:function(ev){ 
 			$progress_bar.css("width",Math.floor((ev.loaded/ev.total)*100)+'%')
@@ -205,7 +216,7 @@ function bind_file_upload_event($file_input,callback){
 					callback(data)
 				}				
 			}else{
-				alert("Upload error:"+data['error'])
+				alert("Upload error:"+data['info'])
 			}
 		}
 	});
@@ -249,11 +260,41 @@ $(function(){
 	bind_file_upload_event($("#thumb_upload"),function(data){
 		re_load_thumb(data.filename)
 	})
-	bind_file_upload_event($("#inset_upload"),function(){
-
+	bind_file_upload_event($("#inset_upload"),function(data){
+		load_images($("#update_title").attr("data-id"))
 	})
-	bind_file_upload_event($("#attachment_upload"),function(){
-
+	bind_file_upload_event($("#attachment_upload"),function(data){
+		load_attachments($("#update_title").attr("data-id"))
 	})
-	
+	$("#save-btn").click(function(){
+		var id=$("#update_title").attr('data-id')
+		if(!id){
+			alert("Please select a draft")
+			return false
+		}
+		$.post(config['web_root']+"Home/Draft/update_draft",{id:id,content:editor.getValue()},function(data){
+			if(data['aff']===1){
+				alert("Save draft ok.")
+				load_draft(id)
+			}else{
+				alert(data['error'])
+			}
+		},'json')
+		return false
+	})
+	var now = new Date()
+	$("#new-title-input").val(
+		now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate()
+		+"-new-draft-title-here")
+	$("#create_draft_btn").click(function(){
+		$.getJSON(config['web_root']+"Home/Draft/create_draft",
+			{title:$("#new-title-input").val()},
+			function(data){
+				if(data['aff']){
+					clear_draft()
+					load_draft_list(1,config['page_size'])
+				}
+			})
+		return false;
+	})
 })

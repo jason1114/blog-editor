@@ -13,7 +13,18 @@ class AttachmentController extends Controller {
     	$statement->execute(array($_GET['id']));
     	echo json_encode($statement->fetchAll());
     }
-    public function upload_attachment(){
-
+    public function delete_attachment(){
+        $del_result = unlink(env('ATTACHMENT_DIR').$_GET['filename']);
+        if(!$del_result){
+            echo json_encode(array('result'=>'error','info'=>'delete file fail'));
+        }
+        $statement = $this->pdo->prepare(
+            "delete from attachment where filename=?");
+        $statement->execute(array($_GET['filename']));
+        if($statement->rowCount()===1){
+            echo json_encode(array('result'=>'ok'));
+        }else{
+            echo json_encode(array('result'=>'error','info'=>$statement->errorInfo()));
+        }
     }
 }

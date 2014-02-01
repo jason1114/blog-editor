@@ -14,9 +14,17 @@ class ImageController extends Controller {
     	echo json_encode($statement->fetchAll());
     }
     public function delete_image(){
-
-    }
-    public function upload_image(){
-
+        $del_result = unlink(env('INSET_DIR').$_GET['filename']);
+        if(!$del_result){
+            echo json_encode(array('result'=>'error','info'=>'delete file fail'));
+        }
+        $statement = $this->pdo->prepare(
+            "delete from image where filename=?");
+        $statement->execute(array($_GET['filename']));
+        if($statement->rowCount()===1){
+            echo json_encode(array('result'=>'ok'));
+        }else{
+            echo json_encode(array('result'=>'error','info'=>$statement->errorInfo()));
+        }
     }
 }

@@ -43,19 +43,35 @@ class DraftController extends Controller {
             "insert into draft(title,content,create_time,last_save_time) values(?,?,?,?)");
         $content = file_get_contents(C('APP_ROOT').'Public/draft_template.markdown');
         $now =  date("Y-m-d H:i:s");
-        $statement->execute(array(date("Y-m-d")."-new-draft",$content,$now,$now));
+        $statement->execute(array($_GET['title'],$content,$now,$now));
         echo json_encode(array(
             'aff' => $statement->rowCount(),
             'error' => $statement->errorInfo()
-            //'path' => C('APP_ROOT').'Public/draft_template.markdown',
-            //'content' => $content
             ));
     }
     public function update_draft(){
-
+        $statement = $this->pdo->prepare(
+            "update draft set content=?,last_save_time=? where id=?");
+        $now =  date("Y-m-d H:i:s");
+        $statement->execute(array($_POST['content'],$now,$_POST['id']));
+        echo json_encode(array(
+            'aff' => $statement->rowCount(),
+            'error' => $statement->errorInfo()
+            ));
     }
     public function delete_draft(){
-
+        $statement = $this->pdo->prepare(
+            "delete from draft where id=?");
+        $statement->execute(array($_GET['id']));
+        $result = 'error';
+        if($statement->rowCount()){
+            $result = 'ok';
+        }
+        echo json_encode(array(
+            'result' => $result,
+            'info' => $statement->errorInfo(),
+            'aff' => $statement->rowCount()
+            ));
     }
     public function rename_draft(){
         //get old title
@@ -65,7 +81,7 @@ class DraftController extends Controller {
         $r = $statement->fetch();
         $old_title = $r['title'];
         if($statement->rowCount()===0){
-            return;
+            return ;
         }
         //update title
         $statement = $this->pdo->prepare(
