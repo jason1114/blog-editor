@@ -15,8 +15,9 @@ class AttachmentController extends Controller {
     }
     public function delete_attachment(){
         $del_result = unlink(env('ATTACHMENT_DIR').$_GET['filename']);
-        if(!$del_result){
+        if(file_exists(env('ATTACHMENT_DIR').$_GET['filename'])){
             echo json_encode(array('result'=>'error','info'=>'delete file fail'));
+            return ;
         }
         $statement = $this->pdo->prepare(
             "delete from attachment where filename=?");

@@ -15,8 +15,9 @@ class ImageController extends Controller {
     }
     public function delete_image(){
         $del_result = unlink(env('INSET_DIR').$_GET['filename']);
-        if(!$del_result){
+        if(file_exists(env('INSET_DIR').$_GET['filename'])){
             echo json_encode(array('result'=>'error','info'=>'delete file fail'));
+            return;
         }
         $statement = $this->pdo->prepare(
             "delete from image where filename=?");
