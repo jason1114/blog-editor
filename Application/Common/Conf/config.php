@@ -19,9 +19,9 @@ return array(
 		'MYSQL_USERNAME' => getenv('MOPAAS_MYSQL6757_USERNAME'),
 		'MYSQL_PASSWORD' => getenv('MOPAAS_MYSQL6757_PASSWORD'),
 		'WEB_ROOT' => 'http://bolgeditor.sturgeon.mopaas.com/index.php/',
-		"INSET_DIR" => '',
-		'THUMB_DIR' => '',
-		'ATTACHMENT_DIR' => ''
+		"INSET_DIR" => 'images/',
+		'THUMB_DIR' => 'thumbnails/',
+		'ATTACHMENT_DIR' => 'attachments/'
 		),
 	'MOCK' => false,
 	'MIME_TYPES' => array(
