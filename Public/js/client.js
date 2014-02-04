@@ -90,7 +90,21 @@ function parse(content){
 	for(var i=0;i<lines.length;i++){
 		var titleIdx = lines[i].indexOf("title:")
 		if(titleIdx>=0){
-			result['title'] = lines[i].substring(titleIdx+6).trim()
+			result['title'] = lines[i].substring(titleIdx+6).trim().split('"')[1]
+			continue
+		}
+		titleIdx = lines[i].indexOf("date:")
+		if(titleIdx>=0){
+			result['date'] = new Date(
+				Date.parse(
+					lines[i].substring(titleIdx+5).trim()
+					)
+				).toDateString()
+			continue
+		}
+		titleIdx = lines[i].indexOf("categories:")
+		if(titleIdx>=0){
+			result['tags'] = lines[i].substring(titleIdx+11).trim().split(' ')
 			continue
 		}
 	}
@@ -222,6 +236,36 @@ function bind_file_upload_event($file_input,callback){
 		}
 	});
 }
+function compile(mixed_content){
+	var splited = mixed_content.split("---")
+	var head = splited[1]
+	var content = splited[2]
+	var content_lines = content.split('\n')
+	for(var i=0;i<content_lines.length;i++){
+		var line = content_lines[i]
+		if(line.indexOf('{%')!=-1&&line.indexOf('%}')!=-1&&line.indexOf('endhighlight')!=-1){
+			content_lines[i] = "</code></pre></div>"
+			continue;
+		}
+		if(line.indexOf('{%')!=-1&&line.indexOf('%}')!=-1&&line.indexOf('highlight')!=-1){
+			var lang = line.split('highlight')[1].split('%}')[0].trim()
+			content_lines[i] = "<div class='highlight'><pre><code class='"+lang+"'>"
+			continue;
+		}
+	}
+	var parsed_content = content_lines.join('\n').replace(/{{ site.images }}\//g,config['inset_dir'])
+	var $div = $("<div/>").html(parsed_content)
+	var $codes = $div.find(".highlight pre code")
+	for(var i=0;i<$codes.length;i++){
+		var $code = $($codes[i])
+		var first = $code.text().substr(0,1)
+		if(first === '\n'){
+			$code.text($code.text().substr(1))
+		}
+	}
+	var result = parse(mixed_content)
+	return {parsed_content:$div.html(),title:result['title'],date:result['date'],tags:result['tags']}
+}
 $(function(){
 	$("#go_previous,#go_next").click(function(){
 		if($(this).hasClass("disabled")){
@@ -296,6 +340,22 @@ $(function(){
 					load_draft_list(1,config['page_size'])
 				}
 			})
+		return false;
+	})
+	$("#preview-btn").click(function(){
+		var id=$("#update_title").attr('data-id')
+		if(!id){
+			alert("Please select a draft")
+			return false
+		}
+		var mixed_content = editor.getValue();
+		var converter = new Markdown.Converter();
+		var result = compile(mixed_content)
+		var html = converter.makeHtml(result['parsed_content']);
+		console.log(html);
+		console.log(result['date'])
+		console.log(result['title'])
+		console.log(JSON.stringify(result['tags']))
 		return false;
 	})
 })
