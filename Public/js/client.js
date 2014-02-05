@@ -254,17 +254,8 @@ function compile(mixed_content){
 		}
 	}
 	var parsed_content = content_lines.join('\n').replace(/{{ site.images }}\//g,config['inset_dir'])
-	var $div = $("<div/>").html(parsed_content)
-	var $codes = $div.find(".highlight pre code")
-	for(var i=0;i<$codes.length;i++){
-		var $code = $($codes[i])
-		var first = $code.text().substr(0,1)
-		if(first === '\n'){
-			$code.text($code.text().substr(1))
-		}
-	}
 	var result = parse(mixed_content)
-	return {parsed_content:$div.html(),title:result['title'],date:result['date'],tags:result['tags']}
+	return {parsed_content:parsed_content,title:result['title'],date:result['date'],tags:result['tags']}
 }
 $(function(){
 	$("#go_previous,#go_next").click(function(){
@@ -320,7 +311,6 @@ $(function(){
 		$.post(config['web_root']+"Home/Draft/update_draft",{id:id,content:editor.getValue()},function(data){
 			if(data['aff']===1){
 				alert("Save draft ok.")
-				load_draft(id)
 			}else{
 				alert(data['error'])
 			}
@@ -350,12 +340,27 @@ $(function(){
 		}
 		var mixed_content = editor.getValue();
 		var converter = new Markdown.Converter();
-		var result = compile(mixed_content)
-		var html = converter.makeHtml(result['parsed_content']);
-		console.log(html);
-		console.log(result['date'])
-		console.log(result['title'])
-		console.log(JSON.stringify(result['tags']))
+		try{
+			var result = compile(mixed_content)
+			var html = converter.makeHtml(result['parsed_content']);
+			var $div = $("<div/>").html(html)
+			var $codes = $div.find(".highlight pre code")
+			for(var i=0;i<$codes.length;i++){
+				var $code = $($codes[i])
+				var first = $code.text().substr(0,1)
+				if(first === '\n'){
+					$code.text($code.text().substr(1))
+				}
+			}
+			result['html'] = $div.html()
+			console.log(html);
+			console.log(result['date'])
+			console.log(result['title'])
+			console.log(JSON.stringify(result['tags']))
+			window.parent.postMessage(result, '*');
+		}catch(error){
+			alert(JSON.stringify(error))
+		}
 		return false;
 	})
 })
