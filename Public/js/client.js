@@ -241,16 +241,22 @@ function compile(mixed_content){
 	var head = splited[1]
 	var content = splited[2]
 	var content_lines = content.split('\n')
+	var is_code_line=false
 	for(var i=0;i<content_lines.length;i++){
 		var line = content_lines[i]
 		if(line.indexOf('{%')!=-1&&line.indexOf('%}')!=-1&&line.indexOf('endhighlight')!=-1){
 			content_lines[i] = "</code></pre></div>"
+			is_code_line=false
 			continue;
 		}
 		if(line.indexOf('{%')!=-1&&line.indexOf('%}')!=-1&&line.indexOf('highlight')!=-1){
 			var lang = line.split('highlight')[1].split('%}')[0].trim()
-			content_lines[i] = "<div class='highlight'><pre><code class='"+lang+"'>"
+			content_lines[i] = "<div class='highlight'><pre><code class='"+lang+"' unformatedcode>"
+			is_code_line=true
 			continue;
+		}
+		if(is_code_line){
+			content_lines[i] = content_lines[i].replace(/</g,"&lt;").replace(/>/g,"&gt;")
 		}
 	}
 	var parsed_content = content_lines.join('\n').replace(/{{ site.images }}\//g,config['inset_dir'])
@@ -343,16 +349,8 @@ $(function(){
 		try{
 			var result = compile(mixed_content)
 			var html = converter.makeHtml(result['parsed_content']);
-			var $div = $("<div/>").html(html)
-			var $codes = $div.find(".highlight pre code")
-			for(var i=0;i<$codes.length;i++){
-				var $code = $($codes[i])
-				var first = $code.text().substr(0,1)
-				if(first === '\n'){
-					$code.text($code.text().substr(1))
-				}
-			}
-			result['html'] = $div.html()
+			//html.replace(/unformatedcode>\n/g,'>')
+			result['html'] = html.replace(/unformatedcode>\n/g,'>')
 			console.log(html);
 			console.log(result['date'])
 			console.log(result['title'])
