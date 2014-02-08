@@ -308,7 +308,9 @@ $(function(){
 	bind_file_upload_event($("#attachment_upload"),function(data){
 		load_attachments($("#update_title").attr("data-id"))
 	})
-	$("#save-btn").click(function(){
+	$("#save-btn").click(save_draft)
+
+	function save_draft(){
 		var id=$("#update_title").attr('data-id')
 		if(!id){
 			alert("Please select a draft")
@@ -322,7 +324,17 @@ $(function(){
 			}
 		},'json')
 		return false
-	})
+	}
+	$(document).keydown(function(event) {
+
+	    //19 for Mac Command+S
+	    if (!( String.fromCharCode(event.which).toLowerCase() == 's' && event.ctrlKey) && !(event.which == 19)) return true;
+
+	    save_draft()
+
+	    event.preventDefault();
+	    return false;
+	});
 	var now = new Date()
 	$("#new-title-input").val(
 		now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate()
