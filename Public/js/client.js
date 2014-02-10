@@ -335,6 +335,19 @@ $(function(){
 	    event.preventDefault();
 	    return false;
 	});
+	$(document).keydown(function(event) {
+      if (event.ctrlKey && event.which == 17){
+        window.parent.postMessage({'cmd':'res-min'}, '*');
+        event.preventDefault();
+        return false;
+      }
+  });
+	$("body").keyup(function(event){
+		if(event.which!=115){
+			return
+		}
+		preview_draft()
+	})
 	var now = new Date()
 	$("#new-title-input").val(
 		now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate()
@@ -350,7 +363,8 @@ $(function(){
 			})
 		return false;
 	})
-	$("#preview-btn").click(function(){
+	$("#preview-btn").click(preview_draft)
+	function preview_draft(){
 		var id=$("#update_title").attr('data-id')
 		if(!id){
 			alert("Please select a draft")
@@ -372,5 +386,5 @@ $(function(){
 			alert(JSON.stringify(error))
 		}
 		return false;
-	})
+	}
 })
