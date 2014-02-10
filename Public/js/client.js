@@ -336,7 +336,7 @@ $(function(){
 	    return false;
 	});
 	$(document).keydown(function(event) {
-      if (event.ctrlKey && event.which == 17){
+      if (event.ctrlKey && event.which == 13){
         window.parent.postMessage({'cmd':'res-min'}, '*');
         event.preventDefault();
         return false;
