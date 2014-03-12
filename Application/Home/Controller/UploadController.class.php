@@ -38,7 +38,7 @@ class UploadController extends Controller {
         $filename = $this->get_thumb_name($r['title']).'.jpg';
         $save_file_result = $this->index(env('THUMB_DIR'), $filename);
         if(!$save_file_result){
-            echo json_encode(array('result' => 'error','info' => 'save file failure' . env('THUMB_DIR') . $filename));
+            echo json_encode(array('result' => 'error','info' => 'save file failure: on moving [' . $_FILES['file']['tmp_name'] . '] to ' . env('THUMB_DIR') . $filename));
             return ;
         }
         echo(
