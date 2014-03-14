@@ -19,9 +19,9 @@ return array(
 		'MYSQL_USERNAME' => getenv('MOPAAS_MYSQL6757_USERNAME'),
 		'MYSQL_PASSWORD' => getenv('MOPAAS_MYSQL6757_PASSWORD'),
 		'WEB_ROOT' => 'http://bolgeditor.sturgeon.mopaas.com/index.php/',
-		"INSET_DIR" => getenv("MOPAAS_FILESYSTEM7012_LOCAL_PATH")."/images/",
-		'THUMB_DIR' => getenv("MOPAAS_FILESYSTEM7012_LOCAL_PATH").'/thumbnails/',
-		'ATTACHMENT_DIR' => getenv("MOPAAS_FILESYSTEM7012_LOCAL_PATH").'/attachments/'
+		"INSET_DIR" => getenv("MOPAAS_FILESYSTEM7012_LOCAL_PATH").getenv("MOPAAS_FILESYSTEM7012_NAME")."/images/",
+		'THUMB_DIR' => getenv("MOPAAS_FILESYSTEM7012_LOCAL_PATH").getenv("MOPAAS_FILESYSTEM7012_NAME").'/thumbnails/',
+		'ATTACHMENT_DIR' => getenv("MOPAAS_FILESYSTEM7012_LOCAL_PATH").getenv("MOPAAS_FILESYSTEM7012_NAME").'/attachments/'
 		),
 	'MOCK' => false,
 	'MIME_TYPES' => array(
